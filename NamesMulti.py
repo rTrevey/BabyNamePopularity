@@ -4,10 +4,6 @@ import sys
 import matplotlib.pyplot as plt
 import os
 
-def makeInt(string):
-	integer = int(re.findall(r'(\d+)', string)[0])
-	return integer
-
 def main(names):
 	list_list =[]
 	for name in names:
