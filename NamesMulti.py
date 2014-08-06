@@ -7,7 +7,7 @@ def main(names):
 	list_list =[]
 	for name in names:
 		list = []
-		path = '/home/trevey/Documents/google-python-exercises/babynames/BabyNames/'
+		path = sys.argv[3]
 		fileList = os.listdir(path)
 		for filename in fileList:
 			year = str(filename)[-8:-4]
