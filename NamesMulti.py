@@ -1,48 +1,8 @@
 import re
 import urllib
-import requests
-from bs4 import BeautifulSoup as bs
 import sys
 import matplotlib.pyplot as plt
-import time
 import os
-#import numpy as np
-
-baseurl = "http://www.ssa.gov/cgi-bin/popularnames.cgi"
-
-def birthYearScrape(name):
-	list = []
-	for i in range(1880, 2014):
-		post_params = {
-           "number":"n",
-           "top": "1000",
-           "year": i
-           }
-		post_args  = urllib.urlencode(post_params)
-		html = urllib.urlopen(baseurl, post_args).read()
-		soup = bs(html)
-		birthYear = soup.find('h2').getText().split()[2]
-		try:
-			regex = re.compile(r'td\>(%s)\</td\>' %name)
-			regex2 = re.compile(r'\<td\>(\S+)\</td\>')
-			nameMatch = re.findall(regex, html)[0]
-			nameMatchindex = html.index(nameMatch) + len(name)
-			numUni = re.findall(regex2, html[nameMatchindex: nameMatchindex + 25])[0]
-			if ',' in numUni:
-				num = (int(''.join(numUni.split(','))))
-			else:
-				num = int(numUni)
-			tuple = (birthYear, num)
-			print str(num) + " in " + str(birthYear)
-		except Exception, e:
-			num = 0
-			print "Birth year count missing..."
-			print birthYear
-			print str(e)
-			tuple = (birthYear, 0)
-		list.append(tuple)
-		time.sleep(2)
-	return list
 
 def makeInt(string):
 	integer = int(re.findall(r'(\d+)', string)[0])
@@ -50,7 +10,7 @@ def makeInt(string):
 
 def main(names):
 	list_list =[]
-	for name in names:#This loop should actually run inside the openfile loop
+	for name in names:
 		list = []
 		path = '/home/trevey/Documents/google-python-exercises/babynames/BabyNames/'
 		fileList = os.listdir(path)
@@ -77,33 +37,33 @@ def main(names):
 	plot(list_list, names)
 	
 def plot(list_list, names):
-	plt.figure(1)
-	plt.subplot(211)
-	rawlist1 = [int(y[1]) for y in list_list[0]]
-	ylist1 = [x - rawlist1[i - 1] for i, x in enumerate(rawlist1)]
-	rawlist2 = [int(y[1]) for y in list_list[1]]
-	ylist2 = [x - rawlist2[i - 1] for i, x in enumerate(rawlist2)]
-	print type(ylist2[0])
+	plt.figure(1, figsize = (7.5, 9.25))
+	plt.subplot(311)
+	ylist1 = [int(y[1]) for y in list_list[0]]
+	ylist2 = [int(y[1]) for y in list_list[1]]
 	list_totals = [ylist1 + ylist2]
 	xlist1 = [x[0] for x in list_list[0]]
 	xlist2 = [x[0] for x in list_list[1]]
 	plt.plot(xlist1, ylist1, 'b', xlist2, ylist2, 'r')
-	#minVal = min(list_totals) - (.20 * (min(list_totals)))
-	#maxVal = max(list_totals) + (.20 * (min(list_totals)))
-	#plt.axis([1880, 2013, minVal, maxVal])
+	plt.ylabel('Total Births By Name')
+	plt.xlabel("Year")
+	
+	plt.subplot(312)
+	y2list1 = [x - ylist1[i - 1] for i, x in enumerate(ylist1)]
+	y2list2 = [x - ylist2[i - 1] for i, x in enumerate(ylist2)]
+	list_totals = [y2list1 + y2list2]
+	plt.plot(xlist1, y2list1, 'b', xlist2, y2list2, 'r')
 	plt.ylabel('Popularity Shift/Rate of Change')
 	plt.xlabel("Year")
 	
-	plt.subplot(212)
+	plt.subplot(313)
 	list_totals2 = [y[2] for y in list_list[0]] + [y[2] for y in list_list[1]]
-	y2list1 = [float(y[2]) for y in list_list[0]]
-	y2list2 = [float(y[2]) for y in list_list[1]]
-	plt.plot(xlist1, y2list1, 'b', xlist2, y2list2, 'r')
-	#minVal2 = min(list_totals2) - (.20 *(min(list_totals2)))
-	#maxVal2 = max(list_totals2) + (.20* (max(list_totals2)))
-	#plt.axis([1880, 2013, minVal2, maxVal2])
+	y3list1 = [float(y[2]) for y in list_list[0]]
+	y3list2 = [float(y[2]) for y in list_list[1]]
+	plt.plot(xlist1, y3list1, 'b', xlist2, y3list2, 'r')
 	plt.ylabel('Percent of Births')
 	plt.xlabel("Year")
+	plt.tight_layout()
 	plt.show()
 
 	
