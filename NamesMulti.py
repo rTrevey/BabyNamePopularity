@@ -1,5 +1,4 @@
 import re
-import urllib
 import sys
 import matplotlib.pyplot as plt
 import os
